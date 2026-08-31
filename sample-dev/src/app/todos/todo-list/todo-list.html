@@ -1,0 +1,47 @@
+<section class="todos">
+  <header class="todos__header">
+    <a routerLink="/" class="back-link">&larr; Retour au dashboard</a>
+    <div class="todos__title-row">
+      <h1>Todo List</h1>
+      <a routerLink="/todos/new" class="btn btn--primary">+ Nouvelle tache</a>
+    </div>
+    <p class="todos__stats">
+      {{ todoService.total() }} tache(s) &middot;
+      {{ todoService.doneCount() }} terminee(s) &middot;
+      {{ todoService.pendingCount() }} en cours
+    </p>
+  </header>
+
+  @if (todoService.todos().length === 0) {
+    <div class="empty-state">
+      <p>Aucune tache pour le moment.</p>
+      <a routerLink="/todos/new" class="btn btn--primary">Creer votre premiere tache</a>
+    </div>
+  } @else {
+    <ul class="todo-items">
+      @for (todo of todoService.todos(); track todo.id) {
+        <li class="todo-item" [class.todo-item--done]="todo.done">
+          <label class="todo-item__checkbox">
+            <input
+              type="checkbox"
+              [checked]="todo.done"
+              (change)="toggle(todo.id)"
+            />
+          </label>
+
+          <div class="todo-item__content">
+            <h3 class="todo-item__title">{{ todo.title }}</h3>
+            @if (todo.description) {
+              <p class="todo-item__description">{{ todo.description }}</p>
+            }
+          </div>
+
+          <div class="todo-item__actions">
+            <a class="icon-btn" [routerLink]="['/todos', todo.id, 'edit']" title="Modifier">✏️</a>
+            <button class="icon-btn" type="button" (click)="remove(todo.id, todo.title)" title="Supprimer">🗑️</button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

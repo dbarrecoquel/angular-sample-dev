@@ -1,0 +1,30 @@
+<section class="dashboard">
+
+    <header class = "dashboard__header">
+        <h1>Tableau de bord</h1>
+        <p>Choisissez un sous-projet pour commencer.</p>
+    </header>
+    <div class = "dashboard__grid">
+        @for (project of subProjects; track project.id) {
+            <article
+            class = "card"
+            [class.card--disabled] = "!project.route"
+            [style.--accent] = "project.color"
+            (click) = "open(project)"
+            (keyup.enter) = "open(project)"
+            tabindex = "0"
+            role = "button">
+            
+            <div class = "card__icon">{{project.icon }}</div>
+            <h2 class = "card__title">{{project.name}}</h2>
+            <p class = "card__description">{{project.description}}</p>
+            @if (!project.route) {
+                    <span class = "card__badge">Bientôt</span>
+            }
+        
+        </article>
+        }
+
+    </div>
+
+</section>
