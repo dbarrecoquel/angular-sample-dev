@@ -1,0 +1,40 @@
+<section class="notes">
+  <header class="notes__header">
+    <a routerLink="/" class="back-link">&larr; Retour au dashboard</a>
+    <div class="notes__title-row">
+      <h1>Notes</h1>
+      <a routerLink="/notes/new" class="btn btn--primary">+ Nouvelle note</a>
+    </div>
+    <p class="notes__stats">{{ noteService.notes().length }} note(s)</p>
+  </header>
+
+  @if (noteService.loading()) {
+    <div class="state-box">Chargement des notes...</div>
+  } @else if (noteService.error()) {
+    <div class="state-box state-box--error">
+      <p>{{ noteService.error() }}</p>
+      <button type="button" class="btn btn--secondary" (click)="reload()">Reessayer</button>
+    </div>
+  } @else if (noteService.notes().length === 0) {
+    <div class="state-box">
+      <p>Aucune note pour le moment.</p>
+      <a routerLink="/notes/new" class="btn btn--primary">Creer votre premiere note</a>
+    </div>
+  } @else {
+    <ul class="note-items">
+      @for (note of noteService.notes(); track note.id) {
+        <li class="note-item">
+          <div class="note-item__content">
+            <h3 class="note-item__title">{{ note.title }}</h3>
+            <p class="note-item__body">{{ note.content }}</p>
+          </div>
+
+          <div class="note-item__actions">
+            <a class="icon-btn" [routerLink]="['/notes', note.id, 'edit']" title="Modifier">✏️</a>
+            <button class="icon-btn" type="button" (click)="remove(note.id, note.title)" title="Supprimer">🗑️</button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

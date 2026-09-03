@@ -1,0 +1,43 @@
+<section class="note-form-page">
+  <a routerLink="/notes" class="back-link">&larr; Retour a la liste</a>
+
+  <h1>{{ isEditMode() ? 'Modifier la note' : 'Nouvelle note' }}</h1>
+
+  @if (loading()) {
+    <div class="state-box">Chargement de la note...</div>
+  } @else if (loadError()) {
+    <div class="state-box state-box--error">{{ loadError() }}</div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <div class="field">
+        <label for="title">Titre *</label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          placeholder="Ex : Idees pour le sprint"
+        />
+        @if (form.controls.title.invalid && form.controls.title.touched) {
+          <span class="error">Le titre doit contenir au moins 2 caracteres.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="content">Contenu</label>
+        <textarea
+          id="content"
+          formControlName="content"
+          rows="8"
+          placeholder="Ecrivez votre note ici..."
+        ></textarea>
+      </div>
+
+      <div class="form__actions">
+        <a routerLink="/notes" class="btn btn--secondary">Annuler</a>
+        <button type="submit" class="btn btn--primary" [disabled]="submitting()">
+          {{ submitting() ? 'Enregistrement...' : (isEditMode() ? 'Enregistrer' : 'Creer') }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

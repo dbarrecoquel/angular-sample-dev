@@ -10,6 +10,10 @@ export const routes: Routes = [
     loadChildren: () => import('./todos/todos.routes').then(m => m.TODOS_ROUTES)
   },
   {
+    path: 'notes',
+    loadChildren: () => import('./notes/notes.routes').then(m => m.NOTES_ROUTES)
+  },
+  {
     path: '**',
     redirectTo: ''
   }
