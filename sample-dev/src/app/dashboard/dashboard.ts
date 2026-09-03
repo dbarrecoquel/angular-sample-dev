@@ -26,7 +26,7 @@ export class Dashboard {
     {
       id: 'notes',
       name: 'Notes',
-      description: 'Bientot disponible : prenez des notes rapides et organisez-les par tag.',
+      description: 'Prenez des notes rapides et organisez-les par tag.',
       icon: '📝',
       route: '/notes',
       color: '#059669'

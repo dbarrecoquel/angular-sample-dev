@@ -17,22 +17,27 @@ export class NoteService {
 
   private readonly _page = signal(0);
   private readonly _size = signal(10);
+  private readonly _search = signal<string | null>(null);
 
   readonly notes = this._notes.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
   readonly page = this._page.asReadonly();
   readonly size = this._size.asReadonly();
+  readonly search = this._search.asReadonly();
 
   /** Charge une page de notes depuis l'API et met a jour le signal `notes`. */
-  loadAll(page = 0, size = this._size()): void {
+  loadAll(page = 0, size = this._size(), search = this._search()): void {
     this._page.set(page);
     this._size.set(size);
+    this._search.set(search);
     this._loading.set(true);
     this._error.set(null);
 
-    const params = new HttpParams().set('page', page).set('size', size);
+    let params = new HttpParams().set('page', page).set('size', size);
 
+    if (search)
+        params = params.set('search',search);
     this.http
       .get<NoteList>(this.baseUrl, { params })
       .pipe(
@@ -53,7 +58,7 @@ export class NoteService {
   create(draft: NoteDraft): Observable<Note> {
     return this.http.post<Note>(this.baseUrl, draft).pipe(
       // La creation modifie le nombre total d'elements / de pages : on recharge la page courante.
-      tap(() => this.loadAll(this._page(), this._size())),
+      tap(() => this.loadAll(this._page(), this._size(), this._search())),
       catchError(err => this.handleError(err, 'Impossible de creer la note.'))
     );
   }
@@ -71,8 +76,7 @@ export class NoteService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(
-      // La suppression modifie le nombre total d'elements / de pages : on recharge la page courante.
-      tap(() => this.loadAll(this._page(), this._size())),
+      tap(() => this.loadAll(this._page(), this._size(), this._search())),
       catchError(err => this.handleError(err, 'Impossible de supprimer la note.'))
     );
   }

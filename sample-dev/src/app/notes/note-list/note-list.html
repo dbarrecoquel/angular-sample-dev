@@ -5,8 +5,28 @@
       <h1>Notes</h1>
       <a routerLink="/notes/new" class="btn btn--primary">+ Nouvelle note</a>
     </div>
+
+    <div class="search-box">
+      <input
+        type="search"
+        placeholder="Rechercher une note (titre, contenu)..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange($event)"
+        aria-label="Rechercher une note"
+      />
+      @if (searchTerm) {
+        <button type="button" class="search-box__clear" (click)="clearSearch()" title="Effacer la recherche">✕</button>
+      }
+    </div>
+
     @if (noteService.notes(); as list) {
-      <p class="notes__stats">{{ list.totalElements }} note(s) &middot; page {{ noteService.page() + 1 }} / {{ list.totalPages || 1 }}</p>
+      <p class="notes__stats">
+        {{ list.totalElements }} note(s)
+        @if (noteService.search()) {
+          pour "{{ noteService.search() }}"
+        }
+        &middot; page {{ noteService.page() + 1 }} / {{ list.totalPages || 1 }}
+      </p>
     }
   </header>
 
@@ -19,8 +39,13 @@
     </div>
   } @else if (!noteService.notes()?.content?.length) {
     <div class="state-box">
-      <p>Aucune note pour le moment.</p>
-      <a routerLink="/notes/new" class="btn btn--primary">Creer votre premiere note</a>
+      @if (noteService.search()) {
+        <p>Aucune note ne correspond a "{{ noteService.search() }}".</p>
+        <button type="button" class="btn btn--secondary" (click)="clearSearch()">Effacer la recherche</button>
+      } @else {
+        <p>Aucune note pour le moment.</p>
+        <a routerLink="/notes/new" class="btn btn--primary">Creer votre premiere note</a>
+      }
     </div>
   } @else {
     <ul class="note-items">
