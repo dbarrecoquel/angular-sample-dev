@@ -92,6 +92,13 @@
   gap: 12px;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
 .note-item {
   display: flex;
   align-items: flex-start;

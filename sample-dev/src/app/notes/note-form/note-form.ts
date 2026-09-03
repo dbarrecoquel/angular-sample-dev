@@ -1,8 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NoteService } from '../../core/note';
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-note-form',
   imports: [ReactiveFormsModule, RouterLink],
@@ -14,7 +14,7 @@ export class NoteForm {
   private readonly noteService = inject(NoteService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-
+  private readonly destroyRef = inject(DestroyRef);
   private readonly noteId = signal<number | null>(null);
 
   readonly isEditMode = computed(() => this.noteId() !== null);
@@ -34,7 +34,7 @@ export class NoteForm {
       this.noteId.set(id);
       this.loading.set(true);
 
-      this.noteService.getById(id).subscribe({
+      this.noteService.getById(id).pipe(takeUntilDestroyed()).subscribe({
         next: note => {
           this.form.patchValue({ title: note.title, content: note.content });
           this.loading.set(false);
@@ -59,9 +59,13 @@ export class NoteForm {
 
     const request$ = id !== null ? this.noteService.update(id, value) : this.noteService.create(value);
 
-    request$.subscribe({
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => this.router.navigateByUrl('/notes'),
-      error: () => this.submitting.set(false)
+      error: (err) => {
+
+        this.loadError.set(err.message ?? 'Erreur');
+        this.submitting.set(false)
+      }
     });
   }
 }

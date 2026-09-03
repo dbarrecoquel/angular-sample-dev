@@ -6,4 +6,13 @@ export interface Note{
     updatedAt : string;
 }
 
+export interface NoteList {
+
+    size : number;
+    last : boolean;
+    totalPages : number;
+    content : Note[];
+    totalElements : number;
+}
+
 export type NoteDraft = Pick<Note, 'title' | 'content'>;

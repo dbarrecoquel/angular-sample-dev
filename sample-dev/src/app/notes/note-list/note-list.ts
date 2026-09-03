@@ -16,7 +16,21 @@ export class NoteList implements OnInit {
   }
 
   reload(): void {
-    this.noteService.loadAll();
+    this.noteService.loadAll(this.noteService.page(), this.noteService.size());
+  }
+
+  previousPage(): void {
+    const current = this.noteService.page();
+    if (current > 0) {
+      this.noteService.loadAll(current - 1, this.noteService.size());
+    }
+  }
+
+  nextPage(): void {
+    const list = this.noteService.notes();
+    if (list && !list.last) {
+      this.noteService.loadAll(this.noteService.page() + 1, this.noteService.size());
+    }
   }
 
   remove(id: number, title: string): void {

@@ -5,7 +5,9 @@
       <h1>Notes</h1>
       <a routerLink="/notes/new" class="btn btn--primary">+ Nouvelle note</a>
     </div>
-    <p class="notes__stats">{{ noteService.notes().length }} note(s)</p>
+    @if (noteService.notes(); as list) {
+      <p class="notes__stats">{{ list.totalElements }} note(s) &middot; page {{ noteService.page() + 1 }} / {{ list.totalPages || 1 }}</p>
+    }
   </header>
 
   @if (noteService.loading()) {
@@ -15,14 +17,14 @@
       <p>{{ noteService.error() }}</p>
       <button type="button" class="btn btn--secondary" (click)="reload()">Reessayer</button>
     </div>
-  } @else if (noteService.notes().length === 0) {
+  } @else if (!noteService.notes()?.content?.length) {
     <div class="state-box">
       <p>Aucune note pour le moment.</p>
       <a routerLink="/notes/new" class="btn btn--primary">Creer votre premiere note</a>
     </div>
   } @else {
     <ul class="note-items">
-      @for (note of noteService.notes(); track note.id) {
+      @for (note of noteService.notes()?.content; track note.id) {
         <li class="note-item">
           <div class="note-item__content">
             <h3 class="note-item__title">{{ note.title }}</h3>
@@ -36,5 +38,14 @@
         </li>
       }
     </ul>
+
+    <div class="pagination">
+      <button type="button" class="btn btn--secondary" [disabled]="noteService.page() === 0" (click)="previousPage()">
+        &larr; Precedent
+      </button>
+      <button type="button" class="btn btn--secondary" [disabled]="noteService.notes()?.last" (click)="nextPage()">
+        Suivant &rarr;
+      </button>
+    </div>
   }
 </section>
